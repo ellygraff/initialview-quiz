@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Is InitialView Right for You?</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 3rem 1rem;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      border: 0.5px solid rgba(0,0,0,0.12);
+      padding: 2.5rem;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    .header { margin-bottom: 2rem; }
+    .header h1 { font-size: 22px; font-weight: 500; color: #1a1a1a; margin-bottom: 0.4rem; }
+    .header p { font-size: 15px; color: #666; line-height: 1.6; }
+
+    .prog-bg { height: 4px; background: #e5e3dc; border-radius: 2px; margin-bottom: 2rem; }
+    .prog-fill { height: 4px; background: #7F77DD; border-radius: 2px; transition: width 0.4s ease; }
+
+    .qlabel { font-size: 13px; color: #888; margin-bottom: 0.4rem; }
+    .qtext { font-size: 19px; font-weight: 500; color: #1a1a1a; margin-bottom: 1.5rem; line-height: 1.45; }
+    .qsub { font-size: 14px; color: #666; margin-top: -1rem; margin-bottom: 1.25rem; line-height: 1.5; }
+
+    .opt {
+      display: block; width: 100%; text-align: left;
+      padding: 13px 16px; margin-bottom: 10px;
+      border: 0.5px solid rgba(0,0,0,0.2);
+      border-radius: 12px;
+      background: #ffffff;
+      color: #1a1a1a;
+      font-size: 15px; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-family: inherit;
+    }
+    .opt:hover { background: #f5f4f0; border-color: rgba(0,0,0,0.35); }
+
+    .result-box { border-radius: 12px; padding: 1.75rem; border: 0.5px solid rgba(0,0,0,0.12); }
+    .result-icon { margin-bottom: 0.75rem; }
+    .result-title { font-size: 20px; font-weight: 500; color: #1a1a1a; margin-bottom: 0.5rem; }
+    .result-body { font-size: 15px; color: #555; line-height: 1.6; margin-bottom: 1.25rem; }
+
+    .cta-btn {
+      display: inline-block; padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 500;
+      text-decoration: none; cursor: pointer;
+      border: none; margin-bottom: 1rem;
+      font-family: inherit;
+    }
+    .cta-purple { background: #7F77DD; color: #fff; }
+    .cta-purple:hover { background: #6e66cc; }
+    .cta-teal { background: #1D9E75; color: #fff; }
+    .cta-teal:hover { background: #178a65; }
+
+    .consult-line {
+      font-size: 15px; font-weight: 500;
+      color: #444; margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .optional-note {
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 0.5px solid rgba(0,0,0,0.1);
+      font-size: 13px; color: #888; line-height: 1.6;
+    }
+
+    .restart {
+      margin-top: 1rem; display: inline-block;
+      font-size: 13px; color: #888; cursor: pointer;
+      text-decoration: underline; background: none;
+      border: none; padding: 0; font-family: inherit;
+    }
+    .restart:hover { color: #444; }
+
+    @media (max-width: 480px) {
+      .card { padding: 1.5rem; }
+      .qtext { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>Is InitialView right for you?</h1>
+    <p>Answer a few quick questions to find out if InitialView could strengthen your US college application.</p>
+  </div>
+  <div class="prog-bg"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+  <div id="quiz-area"></div>
+</div>
+
+<script>
+const allQuestions = [
+  {
+    id: "q1",
+    text: "Where are you applying to college or university?",
+    sub: null,
+    options: [
+      { label: "US colleges or universities (with or without Canadian schools)", value: "us" },
+      { label: "Only Canadian or other non-US schools", value: "notus" }
+    ]
+  },
+  {
+    id: "q2",
+    text: "What best describes you?",
+    sub: null,
+    options: [
+      { label: "I'm a Canadian student applying to US schools", value: "canadian" },
+      { label: "I'm an international student (outside Canada) applying to US schools", value: "intl" },
+      { label: "I attended a US high school", value: "ushs" }
+    ]
+  },
+  {
+    id: "q3",
+    text: "Your application shows your grades and activities — but does it show you?",
+    sub: null,
+    options: [
+      { label: "Not really — something gets lost in writing", value: "yes" },
+      { label: "Maybe — I'm not sure how I come across on paper", value: "maybe" },
+      { label: "I think my application captures me pretty well", value: "no" }
+    ]
+  },
+  {
+    id: "q4",
+    text: "How would you describe your spoken English?",
+    sub: null,
+    options: [
+      { label: "Strong — and I want to prove that to admissions officers", value: "strong" },
+      { label: "Good, but I'd love a chance to show it beyond my transcript", value: "good" },
+      { label: "I'm still building confidence in spoken English", value: "building" }
+    ]
+  },
+  {
+    id: "q5",
+    text: "Are you applying to schools where you know you'll need to stand out?",
+    sub: null,
+    options: [
+      { label: "Yes — I want every advantage I can get", value: "yes" },
+      { label: "Maybe — I'm not sure how competitive I am", value: "maybe" },
+      { label: "No — I feel confident my application is strong on its own", value: "no" }
+    ]
+  },
+  {
+    id: "q6",
+    text: "Admissions officers read thousands of essays. InitialView lets you speak for yourself — live and unscripted.",
+    sub: "Does that excite you or stress you out?",
+    options: [
+      { label: "That excites me — I'm better in conversation than on paper", value: "excited" },
+      { label: "A bit of both — nervous, but I can see the value", value: "both" },
+      { label: "That stresses me out — I'd rather let my writing speak for me", value: "stressed" }
+    ]
+  }
+];
+
+let answers = {};
+let currentQ = 0;
+let activeQuestions = [...allQuestions];
+
+function getResult() {
+  const a = answers;
+  if (a.q1 === "notus") return "consult";
+  if (a.q2 === "ushs") return "glimpse";
+  if (a.q6 === "stressed" && a.q3 === "no" && a.q5 === "no") return "consult";
+  if (a.q6 === "excited") return "iv";
+  if (a.q3 === "yes" || a.q4 === "strong" || a.q5 === "yes") return "iv";
+  if (a.q6 === "both" && (a.q3 !== "no" || a.q4 !== "building")) return "iv";
+  return "consult";
+}
+
+const optionalNote = "Remember: InitialView is completely optional. It's an extra tool you can add to strengthen your application — not a requirement, and not something schools expect. Getting in is about your whole story, not any single piece of it.";
+
+const results = {
+  iv: {
+    icon: "ti-circle-check",
+    iconColor: "#7F77DD",
+    title: "InitialView sounds like a great fit for you.",
+    body: "As a Canadian or international student applying to US schools, InitialView gives you something your application can't — a chance to add your voice to your story. It's a live, unscripted video interview with a trained interviewer, and you can send it to as many schools as you like at no extra charge. For students whose personality, story, or spoken English doesn't fully come through on paper, it can be a genuine asset.",
+    cta: { label: "Reserve your interview", href: "https://initialview.com/booking/#splash", style: "cta-purple" },
+    consult: "Not sure if it's right for your specific school list? Speak with your American college consulting consultant."
+  },
+  glimpse: {
+    icon: "ti-video",
+    iconColor: "#1D9E75",
+    title: "Glimpse might be the better fit for you.",
+    body: "Since you attended a US high school, Glimpse — InitialView's sister product built specifically for domestic US students — is likely your best option. Same idea: a chance to add your voice to your story, in a short authentic video that gives schools a reason to remember you.",
+    cta: { label: "Learn about Glimpse", href: "https://initialview.com/glimpse", style: "cta-teal" },
+    consult: "Not sure if it's right for your specific school list? Speak with your American college consulting consultant."
+  },
+  consult: {
+    icon: "ti-message-circle",
+    iconColor: "#888",
+    title: "It depends on your situation.",
+    body: "InitialView isn't the right fit for every student — and that's okay. Whether it makes sense for you depends on where you're applying, your background, and how your application is shaping up.",
+    cta: null,
+    consult: "Speak with your American college consulting consultant to figure out if it belongs in your strategy."
+  }
+};
+
+function render() {
+  const area = document.getElementById("quiz-area");
+  const prog = document.getElementById("prog");
+
+  if (currentQ >= activeQuestions.length) {
+    const r = results[getResult()];
+    prog.style.width = "100%";
+    area.innerHTML = `
+      <div class="result-box">
+        <div class="result-icon"><i class="ti ${r.icon}" style="font-size:32px;color:${r.iconColor}"></i></div>
+        <div class="result-title">${r.title}</div>
+        <div class="result-body">${r.body}</div>
+        ${r.cta ? `<a href="${r.cta.href}" target="_blank" class="cta-btn ${r.cta.style}">${r.cta.label}</a><br>` : ""}
+        <div class="consult-line">${r.consult}</div>
+        <div class="optional-note">${optionalNote}</div>
+        <br><button class="restart" onclick="restart()">← Start over</button>
+      </div>`;
+    return;
+  }
+
+  const q = activeQuestions[currentQ];
+  const pct = Math.round((currentQ / activeQuestions.length) * 100);
+  prog.style.width = pct + "%";
+
+  area.innerHTML = `
+    <div class="qlabel">Question ${currentQ + 1} of ${activeQuestions.length}</div>
+    <div class="qtext">${q.text}</div>
+    ${q.sub ? `<div class="qsub">${q.sub}</div>` : ""}
+    ${q.options.map(o => `<button class="opt" onclick="answer('${q.id}','${o.value}')">${o.label}</button>`).join("")}
+  `;
+}
+
+function answer(qid, val) {
+  answers[qid] = val;
+  if (qid === "q1" && val === "notus") {
+    activeQuestions = [allQuestions[0]];
+  }
+  currentQ++;
+  render();
+}
+
+function restart() {
+  answers = {};
+  currentQ = 0;
+  activeQuestions = [...allQuestions];
+  document.getElementById("prog").style.width = "0%";
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
